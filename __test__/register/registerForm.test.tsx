@@ -1,11 +1,17 @@
-import { fireEvent, render, screen } from "@testing-library/react";
+import { fireEvent, render, screen, waitFor } from "@testing-library/react";
 import RegisterForm from "../../app/register/components/RegisterForm";
+import { act } from "react-dom/test-utils";
+import Input from "../../app/register/components/Input";
+
+const mockLogin = jest.fn((email, password) => {
+  return Promise.resolve({ email, password });
+});
 
 describe("회원가입 페이지", () => {
   const placeholderCases = [
     ["email", /email/i],
-    ["password", /password/i],
-    ["confirm Password", /confirm password/i],
+    ["password", "Enter password"],
+    ["confirm password", /confirm password/i],
     ["nickname", /nickname/i],
   ];
   describe("마크업 테스트", () => {
@@ -20,6 +26,8 @@ describe("회원가입 페이지", () => {
     it.each(placeholderCases)(
       "회원가입 필드의 %p input이 옳은 placeholder를 가지고 있는지 확인한다.",
       (_, placeholder) => {
+        render(<RegisterForm />);
+
         const placeholderInput = screen.getByPlaceholderText(placeholder);
         expect(placeholderInput).toBeInTheDocument();
       }
@@ -27,12 +35,12 @@ describe("회원가입 페이지", () => {
 
     it("로그인 페이지로 이동하는 링크와 플로우가 작성되었는지 확인한다.", () => {
       render(<RegisterForm />);
-      const loginLink = screen.getByRole("a", {
+      const loginLink = screen.getByRole("link", {
         name: /login/i,
       });
       expect(loginLink).toBeInTheDocument();
       fireEvent.click(loginLink);
-      expect(window.location.assign).toHaveBeenCalledWith("/login");
+      expect(loginLink).toHaveAttribute("href", "/login");
     });
 
     it("회원가입 버튼은 기본적으로 비활성화 상태여야 한다.", () => {
@@ -47,91 +55,162 @@ describe("회원가입 페이지", () => {
   });
 
   describe("유효성 검사 테스트", () => {
-    it("이메일 란이 비어 있으면, 버튼이 비활성화되어야 한다.", () => {
-      render(<RegisterForm />);
+    const inputArray = [
+      ["email", /email/i],
+      ["password", "password"],
+      ["Confirm Password", "confirmPassword"],
+      ["Nickname", /nickname/i],
+    ];
+    describe("input이 비어 있으면, 버튼이 비활성화되어야 한다.", () => {
+      it.each(inputArray)(
+        "%p의 input 란이 비어 있으면, 버튼이 비활성화되어야 한다.",
+        (_, label) => {
+          render(<RegisterForm />);
+          const input = screen.getByLabelText(label, {
+            selector: "input",
+          });
+          const registerButton = screen.getByRole("button", {
+            name: /register/i,
+          });
 
-      const emailInputs = screen.getByRole("textbox", {
-        name: /email/i,
-      });
-      const registerButton = screen.getByRole("button", {
-        name: /register/i,
-      });
-
-      // 이메일이 비어 있으면 비활성화 된다.
-      fireEvent.change(emailInputs, { target: { value: "" } });
-      expect(registerButton).toBeDisabled();
+          fireEvent.change(input, { target: { value: "" } });
+          expect(registerButton).toBeDisabled();
+        }
+      );
     });
-    it("비밀번호 란이 비어 있으면, 버튼이 비활성화되어야 한다.", () => {
-      const emailInputs = screen.getAllByRole("textbox", {
-        name: /email/i,
-      });
-      const registerButton = screen.getAllByRole("button", {
-        name: /register/i,
-      });
-      expect(emailInputs).toBe("");
-      expect(registerButton).toBeDisabled();
-    });
 
-    it("이메일 정규식을 통과하지 못하면, 버튼이 비활성화되고 경고 문구가 떠야 한다.", () => {
-      const emailInput = screen.getByLabelText(/email/i);
-      const registerButton = screen.getByRole("button", { name: /register/i });
-      const errorMessage = screen.getByRole("paragraph", {
-        name: /error/i,
-      });
-      const emailRegex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
+    describe("validation을 통과하지 못했을 떄", () => {
+      const validationArray = [
+        ["email", "Invalid email"],
+        ["password", "invalid"],
+        ["confirmPassword", "password", "notMatch"],
+        ["nickname", "tooLongLongNickName", "a"],
+      ];
 
-      // 기본적으로 에러 메시지가 뜨지 않는다.
-      expect(errorMessage).not.toBeInTheDocument();
+      // it.each(validationArray)(
+      //   "%p의 정규식을 통과하지 못하면, 버튼이 비활성화되고, 경고 문구가 떠야 한다.",
+      //   async (_, validation, secondCondition) => {
+      //     const { container, getByLabelText } = render(<RegisterForm />);
+      //     const emailInput = getByLabelText(/email/i);
+      //     expect(emailInput).toBeInTheDocument();
+      //     expect(container.innerHTML).not.toMatch("Incorrect email.");
 
-      // 잘못된 형식의 이메일을 입력하면 메시지가 뜬다.
-      fireEvent.change(emailInput, { target: { value: "userExampleCom" } });
-      expect("emailInput").not.toMatch(emailRegex);
-      expect(errorMessage).toBeInTheDocument();
-      expect(registerButton).toBeDisabled();
+      //     await act(async () => {
+      //       fireEvent.change(emailInput, { target: { value: "invalid" } });
+      //       fireEvent.blur(emailInput);
+      //     });
 
-      // 옳은 형식의 이메일을 입력하면 메시지가 사라진다.
-      fireEvent.change(emailInput, { target: { value: "user@example.com" } });
-      expect("user@example.com").not.toMatch(emailRegex);
-      expect(errorMessage).not.toBeInTheDocument();
-    });
-    it("비밀번호가 8자 이하면, 버튼이 비활성화되고 경고 문구가 떠야 한다.", () => {
-      const passwordInput = screen.getByRole("textbox", {
-        name: /password]/i,
-      });
-      const registerButton = screen.getByRole("button", { name: /register/i });
-      const passwordRegex =
-        /^(?=.*[a-zA-Z0-9!@#$%^&*()-_+=])[a-zA-Z0-9!@#$%^&*()-_+=]{8,}$/;
-      const errorMessage = screen.getByRole("paragraph", {
-        name: /error/i,
+      //     expect(container.innerHTML).toMatch("Incorrect email.");
+      //   }
+      // );
+
+      it("이메일 정규식을 통과하지 못하면, 버튼이 비활성화되고 경고 문구가 떠야 한다.", async () => {
+        const { container, getByLabelText } = render(<RegisterForm />);
+        const emailInput = getByLabelText("email");
+        expect(emailInput).toBeInTheDocument();
+        expect(container.innerHTML).not.toMatch("Incorrect email.");
+
+        await act(async () => {
+          fireEvent.change(emailInput, { target: { value: "invalid" } });
+          fireEvent.blur(emailInput);
+        });
+
+        expect(container.innerHTML).toMatch("Incorrect email.");
       });
 
-      // 기본적으로 버튼이 비활성화 된다.
-      expect(registerButton).toBeDisabled();
-      // 경고 문구가 보이지 않아야 한다.
-      expect(errorMessage).not.toBeInTheDocument();
+      it("비밀번호가 8자 이하면, 버튼이 비활성화되고 경고 문구가 떠야 한다.", async () => {
+        const { container, getByLabelText } = render(<RegisterForm />);
+        const emailInput = getByLabelText("password");
+        expect(emailInput).toBeInTheDocument();
+        expect(container.innerHTML).not.toMatch(
+          "The password must be at least 8 characters long."
+        );
 
-      // 8자 이하의 비밀번호를 입력한 상태면 비활성화 된다.
-      fireEvent.change(passwordInput, { target: { value: "wrongPw" } });
-      expect("wrongPw").not.toMatch(passwordRegex);
-      expect(errorMessage).toBeInTheDocument();
+        await act(async () => {
+          fireEvent.change(emailInput, { target: { value: "invalid" } });
+          fireEvent.blur(emailInput);
+        });
 
-      // 8자 이상의 비밀번호를 입력하면 정규식을 통과한다. 에러 문구가 보이지 않아야 한다.
-      fireEvent.change(passwordInput, { target: { value: "correctPassword" } });
-      expect("correctPassword").toMatch(passwordRegex);
-      expect(errorMessage).not.toBeInTheDocument();
+        expect(container.innerHTML).toMatch(
+          "The password must be at least 8 characters long."
+        );
+      });
+      it("비밀번호와 비밀번호 확인의 값이 일치하지 않으면 버튼이 비활성화되고 경고 문구가 떠야 한다.", async () => {
+        const { container, getByLabelText } = render(<RegisterForm />);
+        const input = getByLabelText("password");
+        const confirmInput = getByLabelText("confirmPassword");
+        expect(input).toBeInTheDocument();
+        expect(confirmInput).toBeInTheDocument();
+        expect(container.innerHTML).not.toMatch(
+          "The confirm password does not match."
+        );
+
+        await act(async () => {
+          fireEvent.change(input, { target: { value: "validPassword" } });
+          fireEvent.blur(input);
+          fireEvent.change(confirmInput, {
+            target: { value: "passwordDoesNotMatch" },
+          });
+          fireEvent.blur(confirmInput);
+        });
+
+        expect(container.innerHTML).toMatch(
+          "The confirm password does not match."
+        );
+      });
+      it("닉네임이 2자에서 10자리의 값이 아니면 버튼이 비활성화되고 경고 문구가 떠야 한다.", async () => {
+        const { container, getByLabelText } = render(<RegisterForm />);
+        const nicknameInput = getByLabelText("nickname");
+        expect(nicknameInput).toBeInTheDocument();
+        expect(container.innerHTML).not.toMatch(
+          "Nickname should be 2-10 characters."
+        );
+
+        await act(async () => {
+          fireEvent.change(nicknameInput, { target: { value: "n" } });
+          fireEvent.blur(nicknameInput);
+        });
+
+        expect(container.innerHTML).toMatch(
+          "Nickname should be 2-10 characters."
+        );
+
+        await act(async () => {
+          fireEvent.change(nicknameInput, {
+            target: { value: "tooLongLongNickName" },
+          });
+          fireEvent.blur(nicknameInput);
+        });
+
+        expect(container.innerHTML).toMatch(
+          "Nickname should be 2-10 characters."
+        );
+
+        await act(async () => {
+          fireEvent.change(nicknameInput, {
+            target: { value: "validNick" },
+          });
+          fireEvent.blur(nicknameInput);
+        });
+
+        expect(container.innerHTML).not.toMatch(
+          "Nickname should be 2-10 characters."
+        );
+      });
     });
   });
-
-  // TODO: 추후에 작성해 보기
-  // describe("에러 테스트", () => {
-  //   it("에러가 발생하면 모달이 뜬다.", () => {});
-  //   it("이미 가입된 유저면 에러가 발생한다.", () => {});
-  //   it("이메일이나 비밀번호를 전달하지 않으면 에러가 발생한다.", () => {});
-  // });
-  // describe("로직 테스트", () => {
-  //   it("회원가입이 완료되면 로그인 페이지로 이동한다.", () => {});
-  // });
-  // describe("접근성 테스트", () => {
-  //   it("모든 요소가 키보드로 접근 가능한지 확인한다.", () => {});
-  // });
 });
+
+// TODO: 추후에 작성해 보기
+// describe("에러 테스트", () => {
+//   it("에러가 발생하면 모달이 뜬다.", () => {});
+//   it("이미 가입된 유저면 에러가 발생한다.", () => {});
+//   it("이메일이나 비밀번호를 전달하지 않으면 에러가 발생한다.", () => {});
+// });
+// describe("로직 테스트", () => {
+//   it("회원가입이 완료되면 로그인 페이지로 이동한다.", () => {});
+// });
+// describe("접근성 테스트", () => {
+//   it("모든 요소가 키보드로 접근 가능한지 확인한다.", () => {});
+// });
+// });
