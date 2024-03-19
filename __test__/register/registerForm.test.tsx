@@ -56,10 +56,10 @@ describe("회원가입 페이지", () => {
 
   describe("유효성 검사 테스트", () => {
     const inputArray = [
-      ["email", /email/i],
-      ["password", "password"],
-      ["Confirm Password", "confirmPassword"],
-      ["Nickname", /nickname/i],
+      ["email", "Email"],
+      ["password", "Password"],
+      ["Confirm Password", "Confirm password"],
+      ["Nickname", "Nickname"],
     ];
     describe("input이 비어 있으면, 버튼이 비활성화되어야 한다.", () => {
       it.each(inputArray)(
@@ -80,33 +80,9 @@ describe("회원가입 페이지", () => {
     });
 
     describe("validation을 통과하지 못했을 떄", () => {
-      const validationArray = [
-        ["email", "Invalid email"],
-        ["password", "invalid"],
-        ["confirmPassword", "password", "notMatch"],
-        ["nickname", "tooLongLongNickName", "a"],
-      ];
-
-      // it.each(validationArray)(
-      //   "%p의 정규식을 통과하지 못하면, 버튼이 비활성화되고, 경고 문구가 떠야 한다.",
-      //   async (_, validation, secondCondition) => {
-      //     const { container, getByLabelText } = render(<RegisterForm />);
-      //     const emailInput = getByLabelText(/email/i);
-      //     expect(emailInput).toBeInTheDocument();
-      //     expect(container.innerHTML).not.toMatch("Incorrect email.");
-
-      //     await act(async () => {
-      //       fireEvent.change(emailInput, { target: { value: "invalid" } });
-      //       fireEvent.blur(emailInput);
-      //     });
-
-      //     expect(container.innerHTML).toMatch("Incorrect email.");
-      //   }
-      // );
-
       it("이메일 정규식을 통과하지 못하면, 버튼이 비활성화되고 경고 문구가 떠야 한다.", async () => {
         const { container, getByLabelText } = render(<RegisterForm />);
-        const emailInput = getByLabelText("email");
+        const emailInput = getByLabelText("Email");
         expect(emailInput).toBeInTheDocument();
         expect(container.innerHTML).not.toMatch("Incorrect email.");
 
@@ -117,10 +93,9 @@ describe("회원가입 페이지", () => {
 
         expect(container.innerHTML).toMatch("Incorrect email.");
       });
-
       it("비밀번호가 8자 이하면, 버튼이 비활성화되고 경고 문구가 떠야 한다.", async () => {
         const { container, getByLabelText } = render(<RegisterForm />);
-        const emailInput = getByLabelText("password");
+        const emailInput = getByLabelText("Password");
         expect(emailInput).toBeInTheDocument();
         expect(container.innerHTML).not.toMatch(
           "The password must be at least 8 characters long."
@@ -137,8 +112,8 @@ describe("회원가입 페이지", () => {
       });
       it("비밀번호와 비밀번호 확인의 값이 일치하지 않으면 버튼이 비활성화되고 경고 문구가 떠야 한다.", async () => {
         const { container, getByLabelText } = render(<RegisterForm />);
-        const input = getByLabelText("password");
-        const confirmInput = getByLabelText("confirmPassword");
+        const input = getByLabelText("Password");
+        const confirmInput = getByLabelText("Confirm password");
         expect(input).toBeInTheDocument();
         expect(confirmInput).toBeInTheDocument();
         expect(container.innerHTML).not.toMatch(
@@ -160,7 +135,7 @@ describe("회원가입 페이지", () => {
       });
       it("닉네임이 2자에서 10자리의 값이 아니면 버튼이 비활성화되고 경고 문구가 떠야 한다.", async () => {
         const { container, getByLabelText } = render(<RegisterForm />);
-        const nicknameInput = getByLabelText("nickname");
+        const nicknameInput = getByLabelText("Nickname");
         expect(nicknameInput).toBeInTheDocument();
         expect(container.innerHTML).not.toMatch(
           "Nickname should be 2-10 characters."
