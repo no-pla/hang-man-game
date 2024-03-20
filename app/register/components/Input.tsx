@@ -16,15 +16,18 @@ const Input = ({ label, placeholder, validation, id, type }: InputData) => {
   } = useFormContext();
 
   return (
-    <div>
-      <label htmlFor={id}>{label}</label>
+    <div className="w-full flex flex-col gap-2 text-bodyM">
+      <label htmlFor={id} className="text-white">
+        {label}
+      </label>
       <input
-        {...register(label, validation)}
+        {...register(id, validation)}
         type={type}
         id={id}
+        className="border px-4 py-2 rounded-xl w-full"
         placeholder={placeholder}
       />
-      <p>{errors[label]?.message?.toString()}</p>
+      <p className="text-[#ff3333]">{errors[id]?.message?.toString()}</p>
     </div>
   );
 };
