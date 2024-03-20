@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { Mouse_Memoirs } from "next/font/google";
 import "./globals.css";
+import Provider from "provider/Provider";
 
 const mouseMemoirs = Mouse_Memoirs({
   weight: "400",
@@ -21,9 +22,14 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
-      <body className={mouseMemoirs.className} suppressHydrationWarning={true}>
-        {children}
-      </body>
+      <Provider>
+        <body
+          className={mouseMemoirs.className}
+          suppressHydrationWarning={true}
+        >
+          {children}
+        </body>
+      </Provider>
     </html>
   );
 }

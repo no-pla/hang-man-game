@@ -26,7 +26,19 @@ const RegisterForm = () => {
     mode: "all",
   });
 
-  const onSubmit = async (data: RegisterData) => {};
+  const onSubmit = async (data: RegisterData) => {
+    try {
+      const res = await fetch("api/user", {
+        method: "POST",
+        body: JSON.stringify(data),
+        headers: { "Content-Type": "application/json" },
+      });
+      console.log(res);
+      if (!res.ok) {
+        // throw new Error(res)
+      }
+    } catch (error) {}
+  };
 
   useEffect(() => {
     setDisabled(!method.formState.isValid);
