@@ -1,11 +1,6 @@
-import { fireEvent, render, screen, waitFor } from "@testing-library/react";
+import { fireEvent, render, screen } from "@testing-library/react";
 import RegisterForm from "../../app/register/components/RegisterForm";
 import { act } from "react-dom/test-utils";
-import Input from "../../app/register/components/Input";
-
-const mockLogin = jest.fn((email, password) => {
-  return Promise.resolve({ email, password });
-});
 
 describe("회원가입 페이지", () => {
   const placeholderCases = [
@@ -14,13 +9,18 @@ describe("회원가입 페이지", () => {
     ["confirm password", /confirm password/i],
     ["nickname", /nickname/i],
   ];
+
   describe("마크업 테스트", () => {
     it("회원가입 필드가 모두 제대로 랜더링되었는지 확인한다.", () => {
       render(<RegisterForm />);
 
       const inputs = screen.getAllByRole("textbox");
+      const passwordInputs = screen.getByText("Password");
+      const confirmPasswordInputs = screen.getByText("Confirm password");
 
-      expect(inputs).toHaveLength(4);
+      expect(inputs).toHaveLength(2);
+      expect(passwordInputs).toBeInTheDocument(); // textbox로 password input을 가져올 수 없다.
+      expect(confirmPasswordInputs).toBeInTheDocument();
     });
 
     it.each(placeholderCases)(
@@ -47,7 +47,7 @@ describe("회원가입 페이지", () => {
       render(<RegisterForm />);
 
       const registerButton = screen.getByRole("button", {
-        name: /register/i,
+        name: /Register/i,
       });
 
       expect(registerButton).toBeDisabled();
