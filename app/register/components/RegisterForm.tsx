@@ -6,6 +6,7 @@ import Link from "next/link";
 import Input from "./Input";
 import Button from "./Button";
 import { emailRegex, passwordRegex } from "../../../share/utils.js";
+import { useRouter } from "next/navigation";
 
 interface RegisterData {
   email: string;
@@ -15,6 +16,7 @@ interface RegisterData {
 }
 
 const RegisterForm = () => {
+  const router = useRouter();
   const [disabled, setDisabled] = useState(true);
   const method = useForm({
     defaultValues: {
@@ -35,9 +37,13 @@ const RegisterForm = () => {
       });
       console.log(res);
       if (!res.ok) {
-        // throw new Error(res)
+        throw new Error(res.statusText);
       }
-    } catch (error) {}
+    } catch (error) {
+      console.log(error);
+      return;
+    }
+    router.push("/login");
   };
 
   useEffect(() => {
