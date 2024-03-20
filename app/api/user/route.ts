@@ -54,7 +54,7 @@ export async function POST(req: Request) {
   return NextResponse.json(newUser);
 }
 
-export async function UPDATE(req: NextRequest) {
+export async function PATCH(req: NextRequest) {
   // 프로필 변경 로직 작성
 }
 
