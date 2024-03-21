@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useEffect, useState } from "react";
+import React from "react";
 import { FormProvider, useForm } from "react-hook-form";
 import Link from "next/link";
 import Input from "./Input";
@@ -17,7 +17,6 @@ interface RegisterData {
 
 const RegisterForm = () => {
   const router = useRouter();
-  const [disabled, setDisabled] = useState(true);
   const method = useForm({
     defaultValues: {
       email: "",
@@ -44,10 +43,6 @@ const RegisterForm = () => {
     }
     router.push("/login");
   };
-
-  useEffect(() => {
-    setDisabled(!method.formState.isValid);
-  }, [method.formState.isValid]);
 
   return (
     <>
@@ -76,6 +71,7 @@ const RegisterForm = () => {
           />
           <Input
             label="Password"
+            name="new-password"
             id="password"
             type="password"
             placeholder="Enter password"
@@ -126,7 +122,7 @@ const RegisterForm = () => {
               },
             }}
           />
-          <Button text="Register" disabled={disabled} />
+          <Button text="Register" />
         </form>
       </FormProvider>
       <div className="text-body mt-5 text-center">
