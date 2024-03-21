@@ -4,9 +4,30 @@ import { useFormContext } from "react-hook-form";
 interface InputData {
   label: string;
   placeholder: string;
-  validation: any;
+  validation: ValidationTypes;
   id: string;
   type: string;
+  name?: string;
+}
+
+interface ValidationTypes {
+  required: {
+    value: true;
+    message: string;
+  };
+  pattern?: {
+    value: RegExp;
+    message: string;
+  };
+  validate?: (value: string) => boolean | string;
+  minLength?: {
+    value: number;
+    message: string;
+  };
+  maxLength?: {
+    value: number;
+    message: string;
+  };
 }
 
 const Input = ({ label, placeholder, validation, id, type }: InputData) => {
@@ -27,7 +48,9 @@ const Input = ({ label, placeholder, validation, id, type }: InputData) => {
         className="border px-4 py-2 rounded-xl w-full"
         placeholder={placeholder}
       />
-      <p className="text-warning">{errors[id]?.message?.toString()}</p>
+      {errors && errors[id] && (
+        <p className="text-warning">{errors[id]?.message?.toString()}</p>
+      )}
     </div>
   );
 };
