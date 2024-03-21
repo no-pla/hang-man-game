@@ -1,15 +1,15 @@
 import React from "react";
 import RegisterForm from "./components/RegisterForm";
-import Container from "app/components/Container";
+import BoxContainer from "app/components/BoxContainer";
 
-const page = () => {
+const Page = () => {
   return (
-    <div className="flex justify-center items-center h-screen w-screen tracking-wider px-10 2sm:rounded-[48px] 3sm:px-4">
-      <Container>
+    <div className="flex justify-center items-center h-screen w-screen tracking-wider px-10 xs:rounded-[48px] 2xs:px-4">
+      <BoxContainer>
         <RegisterForm />
-      </Container>
+      </BoxContainer>
     </div>
   );
 };
 
-export default page;
+export default Page;

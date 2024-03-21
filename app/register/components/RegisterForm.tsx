@@ -5,7 +5,7 @@ import { FormProvider, useForm } from "react-hook-form";
 import Link from "next/link";
 import Input from "./Input";
 import Button from "./Button";
-import { emailRegex, passwordRegex } from "../../../share/utils.js";
+import { emailPattern, passwordPattern } from "../../../share/utils.js";
 import { useRouter } from "next/navigation";
 
 interface RegisterData {
@@ -35,12 +35,11 @@ const RegisterForm = () => {
         body: JSON.stringify(data),
         headers: { "Content-Type": "application/json" },
       });
-      console.log(res);
       if (!res.ok) {
         throw new Error(res.statusText);
       }
     } catch (error) {
-      console.log(error);
+      console.error(error);
       return;
     }
     router.push("/login");
@@ -70,7 +69,7 @@ const RegisterForm = () => {
                 message: "Required field.",
               },
               pattern: {
-                value: emailRegex,
+                value: emailPattern,
                 message: "Incorrect email.",
               },
             }}
@@ -86,8 +85,9 @@ const RegisterForm = () => {
                 message: "Required field.",
               },
               pattern: {
-                value: passwordRegex,
-                message: "The password must be at least 8 characters long.",
+                value: passwordPattern,
+                message:
+                  "Password must be at least 8 characters with letters and numbers.",
               },
             }}
           />

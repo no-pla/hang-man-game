@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import { Mouse_Memoirs } from "next/font/google";
+import SessionProvider from "../provider/SessionProvider";
 import "./globals.css";
-import Provider from "provider/Provider";
 
 const mouseMemoirs = Mouse_Memoirs({
   weight: "400",
@@ -21,15 +21,10 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en">
-      <Provider>
-        <body
-          className={mouseMemoirs.className}
-          suppressHydrationWarning={true}
-        >
-          {children}
-        </body>
-      </Provider>
+    <html lang="en" className={mouseMemoirs.className}>
+      <SessionProvider>
+        <body suppressHydrationWarning={true}>{children}</body>
+      </SessionProvider>
     </html>
   );
 }
