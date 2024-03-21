@@ -6,12 +6,7 @@ describe("회원가입 페이지", () => {
   const placeholderCases = [
     ["email", "Enter email", "Email"],
     ["password", "Enter password", "Password"],
-    [
-      "confirm password",
-      "Enter confirm password",
-      "Confirm password",
-      "Nickname",
-    ],
+    ["confirm password", "Enter confirm password", "Nickname"],
     ["nickname", "Enter nickname", "Nickname"],
   ];
 
@@ -27,8 +22,8 @@ describe("회원가입 페이지", () => {
 
     it("회원가입 필드가 모두 제대로 랜더링되었는지 확인한다.", () => {
       const inputs = screen.getAllByRole("textbox");
-      const passwordInputs = screen.getByText("Password");
-      const confirmPasswordInputs = screen.getByText("Confirm password");
+      const passwordInputs = screen.getByLabelText("Password");
+      const confirmPasswordInputs = screen.getByLabelText("Confirm password");
 
       expect(inputs).toHaveLength(2);
       expect(passwordInputs).toBeInTheDocument(); // textbox로 password input을 가져올 수 없다.
@@ -36,9 +31,8 @@ describe("회원가입 페이지", () => {
     });
 
     it.each(placeholderCases)(
-      "회원가입 필드의 input이 옳은 placeholder를 가지고 있는지 확인한다.",
-      (_, placeholder) => {
-        // render(<RegisterForm />);
+      "회원가입 필드의 %p input이 옳은 placeholder를 가지고 있는지 확인한다.",
+      (_, placeholder, __) => {
         const placeholderInput = screen.getByPlaceholderText(placeholder);
         expect(placeholderInput).toBeInTheDocument();
       }
@@ -96,6 +90,13 @@ describe("회원가입 페이지", () => {
       });
 
       expect(container.innerHTML).toMatch("Incorrect email.");
+
+      await act(async () => {
+        fireEvent.change(emailInput, { target: { value: "valid@email.com" } });
+        fireEvent.blur(emailInput);
+      });
+
+      expect(container.innerHTML).not.toMatch("Incorrect email.");
     });
     it("비밀번호가 8자 이하면, 버튼이 비활성화되고 경고 문구가 떠야 한다.", async () => {
       const { container, getByLabelText } = render(
@@ -106,7 +107,7 @@ describe("회원가입 페이지", () => {
       const emailInput = getByLabelText("Password");
       expect(emailInput).toBeInTheDocument();
       expect(container.innerHTML).not.toMatch(
-        "The password must be at least 8 characters long."
+        "Password must be at least 8 characters with letters and numbers."
       );
 
       await act(async () => {
@@ -115,7 +116,17 @@ describe("회원가입 페이지", () => {
       });
 
       expect(container.innerHTML).toMatch(
-        "The password must be at least 8 characters long."
+        "Password must be at least 8 characters with letters and numbers."
+      );
+      await act(async () => {
+        fireEvent.change(emailInput, {
+          target: { value: "thisIsValidPassword0" },
+        });
+        fireEvent.blur(emailInput);
+      });
+
+      expect(container.innerHTML).not.toMatch(
+        "Password must be at least 8 characters with letters and numbers."
       );
     });
     it("비밀번호와 비밀번호 확인의 값이 일치하지 않으면 버튼이 비활성화되고 경고 문구가 떠야 한다.", async () => {
@@ -142,6 +153,19 @@ describe("회원가입 페이지", () => {
       });
 
       expect(container.innerHTML).toMatch(
+        "The confirm password does not match."
+      );
+
+      await act(async () => {
+        fireEvent.change(input, { target: { value: "validPassword" } });
+        fireEvent.blur(input);
+        fireEvent.change(confirmInput, {
+          target: { value: "validPassword" },
+        });
+        fireEvent.blur(confirmInput);
+      });
+
+      expect(container.innerHTML).not.toMatch(
         "The confirm password does not match."
       );
     });
