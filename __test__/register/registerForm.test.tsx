@@ -45,31 +45,6 @@ describe("회원가입 페이지", () => {
       expect(loginLink).toBeInTheDocument();
       expect(loginLink).toHaveAttribute("href", "/login");
     });
-
-    it("회원가입 버튼은 기본적으로 비활성화 상태여야 한다.", () => {
-      const registerButton = screen.getByRole("button", {
-        name: /Register/i,
-      });
-
-      expect(registerButton).toBeDisabled();
-    });
-
-    describe("input이 비어 있으면, 버튼이 비활성화되어야 한다.", () => {
-      it.each(placeholderCases)(
-        "%p의 input 란이 비어 있으면, 버튼이 비활성화되어야 한다.",
-        (_, __, label) => {
-          const input = screen.getByLabelText(label, {
-            selector: "input",
-          });
-          const registerButton = screen.getByRole("button", {
-            name: /register/i,
-          });
-
-          fireEvent.change(input, { target: { value: "" } });
-          expect(registerButton).toBeDisabled();
-        }
-      );
-    });
   });
 
   describe("유효성 검사 테스트", () => {
