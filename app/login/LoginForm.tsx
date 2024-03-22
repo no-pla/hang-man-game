@@ -7,6 +7,7 @@ import Link from "next/link";
 import Input from "../register/components/Input";
 import Button from "../register/components/Button";
 import { emailPattern, passwordPattern } from "../../share/utils";
+import { signIn } from "next-auth/react";
 
 interface LoginData {
   email: string;
@@ -23,8 +24,18 @@ const LoginForm = () => {
     mode: "all",
   });
 
-  const onSubmit = (data: LoginData) => {
-    console.log(data);
+  const onSubmit = async (data: LoginData) => {
+    await signIn("credentials", {
+      ...data,
+      redirect: false,
+    }).then((res: any) => {
+      if (res.ok) {
+        router.push("/");
+      } else {
+        // TODO: 에러 모달 만들기
+        console.log(res.error);
+      }
+    });
   };
 
   return (
