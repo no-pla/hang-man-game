@@ -14,13 +14,13 @@ datasource db {
 }
 
 model User {
-  id           String       @id @default(auto()) @map("_id") @db.ObjectId
-  email        String       @unique
-  password     String
-  name         String
-  profileImage String
-  playRecord   PlayRecord[]
-  joinDate     DateTime
+  id         String       @id @default(auto()) @map("_id") @db.ObjectId
+  email      String       @unique
+  password   String
+  name       String
+  image      String
+  playRecord PlayRecord[]
+  joinDate   DateTime
 }
 
 model PlayRecord {
