@@ -1,23 +1,32 @@
 import { fireEvent, render, screen } from "@testing-library/react";
-import LoginForm from "../../app/login/LoginForm";
 import { act } from "react-dom/test-utils";
+import LoginForm from "../../app/login/LoginForm";
+import AppRouterContextProviderMock from "../../provider/app-router-context-provider-mock";
 
 describe("로그인 페이지", () => {
+  const push = jest.fn();
   describe("마크업 테스트", () => {
-    beforeEach(() => {
-      render(<LoginForm />);
-    });
     it("로그인에 필요한 모든 input이 랜더링 되었는지 확인한다.", () => {
+      render(
+        <AppRouterContextProviderMock router={{ push }}>
+          <LoginForm />
+        </AppRouterContextProviderMock>
+      );
       const inputs = screen.getAllByRole("textbox");
-      const passwordInputs = screen.getByLabelText("Password");
+      const passwordInputs = screen.getByPlaceholderText("Enter password");
 
       expect(inputs).toHaveLength(1);
       expect(passwordInputs).toBeInTheDocument(); // textbox로 password input을 가져올 수 없다.
     });
 
     it("회원가입 페이지로 이동하는 링크와 플로우가 제대로 작동하는지 확인한다.", () => {
+      render(
+        <AppRouterContextProviderMock router={{ push }}>
+          <LoginForm />
+        </AppRouterContextProviderMock>
+      );
       const registerLink = screen.getByRole("link", {
-        name: /register/i,
+        name: /Register/i,
       });
       expect(registerLink).toBeInTheDocument();
       expect(registerLink).toHaveAttribute("href", "/register");
@@ -26,7 +35,11 @@ describe("로그인 페이지", () => {
 
   describe("유효성 검사 테스트", () => {
     it("이메일 정규식을 통과하지 못하면 경고 문구가 떠야 한다.", async () => {
-      const { container, getByLabelText } = render(<LoginForm />);
+      const { container, getByLabelText } = render(
+        <AppRouterContextProviderMock router={{ push }}>
+          <LoginForm />
+        </AppRouterContextProviderMock>
+      );
       const emailInput = getByLabelText("Email");
 
       await act(async () => {
@@ -43,7 +56,11 @@ describe("로그인 페이지", () => {
     });
 
     it("비밀번호 정규식을 통과하지 못하면 경고 문구가 떠야 한다.", async () => {
-      const { container, getByLabelText } = render(<LoginForm />);
+      const { container, getByLabelText } = render(
+        <AppRouterContextProviderMock router={{ push }}>
+          <LoginForm />
+        </AppRouterContextProviderMock>
+      );
       const emailInput = getByLabelText("Password");
 
       await act(async () => {
