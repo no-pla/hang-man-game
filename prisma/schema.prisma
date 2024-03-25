@@ -20,7 +20,7 @@ model User {
   name       String
   image      String
   playRecord PlayRecord[]
-  joinDate   DateTime
+  createdDate  String
 }
 
 model PlayRecord {
@@ -29,5 +29,5 @@ model PlayRecord {
   userId   String   @db.ObjectId
   win      String?
   lose     String?
-  playDate DateTime
+  playDate String
 }
