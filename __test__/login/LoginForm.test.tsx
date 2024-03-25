@@ -6,12 +6,14 @@ import AppRouterContextProviderMock from "../../provider/app-router-context-prov
 describe("로그인 페이지", () => {
   const push = jest.fn();
   describe("마크업 테스트", () => {
-    it("로그인에 필요한 모든 input이 랜더링 되었는지 확인한다.", () => {
+    beforeEach(() => {
       render(
         <AppRouterContextProviderMock router={{ push }}>
           <LoginForm />
         </AppRouterContextProviderMock>
       );
+    });
+    it("로그인에 필요한 모든 input이 랜더링 되었는지 확인한다.", () => {
       const inputs = screen.getAllByRole("textbox");
       const passwordInputs = screen.getByPlaceholderText("Enter password");
 
@@ -20,11 +22,6 @@ describe("로그인 페이지", () => {
     });
 
     it("회원가입 페이지로 이동하는 링크와 플로우가 제대로 작동하는지 확인한다.", () => {
-      render(
-        <AppRouterContextProviderMock router={{ push }}>
-          <LoginForm />
-        </AppRouterContextProviderMock>
-      );
       const registerLink = screen.getByRole("link", {
         name: /Register/i,
       });
@@ -78,14 +75,4 @@ describe("로그인 페이지", () => {
       );
     });
   });
-
-  // TODO: 추후에 작성해 보기
-  // describe("에러 테스트", () => {
-  //   it("에러가 발생하면 모달이 뜬다.", () => {});
-  //   it("존재하지 않는 유저거나, 비밀번호가 일치하지 않으면 에러가 발생한다.", () => {});
-  //   it("이메일이나 비밀번호를 전달하지 않으면 에러가 발생한다.", () => {});
-  // });
-  // describe("로직 테스트", () => {
-  //   it("로그인을 성공적으로 수행하면 메인 페이지로 이동한다.", () => {});
-  // });
 });
