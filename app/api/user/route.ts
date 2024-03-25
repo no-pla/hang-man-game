@@ -45,8 +45,8 @@ export async function POST(req: Request) {
       email,
       password: hashedPassword,
       name: nickname,
-      joinDate: new Date().toISOString(),
-      profileImage:
+      createdDate: new Date().toLocaleDateString("ko-KR"),
+      image:
         "https://firebasestorage.googleapis.com/v0/b/hang-man-game-c1ba4.appspot.com/o/asset%2Fno-image.png?alt=media&token=37010ce6-007b-4d9d-9418-fc51c0e98f98",
     },
   });

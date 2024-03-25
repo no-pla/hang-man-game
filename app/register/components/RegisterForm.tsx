@@ -29,7 +29,7 @@ const RegisterForm = () => {
 
   const onSubmit = async (data: RegisterData) => {
     try {
-      const res = await fetch("api/user", {
+      const res = await fetch("/api/user", {
         method: "POST",
         body: JSON.stringify(data),
         headers: { "Content-Type": "application/json" },
@@ -57,6 +57,7 @@ const RegisterForm = () => {
             label="Email"
             type="email"
             id="email"
+            name="user-email"
             placeholder="Enter email"
             validation={{
               required: {
@@ -71,9 +72,9 @@ const RegisterForm = () => {
           />
           <Input
             label="Password"
-            name="new-password"
-            id="password"
             type="password"
+            id="password"
+            name="user-password"
             placeholder="Enter password"
             validation={{
               required: {
@@ -89,8 +90,9 @@ const RegisterForm = () => {
           />
           <Input
             label="Confirm password"
-            id="confirmPassword"
             type="password"
+            id="confirmPassword"
+            name="confirm-password"
             placeholder="Enter confirm password"
             validation={{
               validate: (value: string) =>
@@ -103,9 +105,10 @@ const RegisterForm = () => {
             }}
           />
           <Input
-            id="nickname"
             label="Nickname"
             type="text"
+            id="nickname"
+            name="user-nickname"
             placeholder="Enter nickname"
             validation={{
               minLength: {
@@ -122,7 +125,9 @@ const RegisterForm = () => {
               },
             }}
           />
-          <Button text="Register" />
+          <div className="w-full mt-5">
+            <Button text="Register" />
+          </div>
         </form>
       </FormProvider>
       <div className="text-body mt-5 text-center">
