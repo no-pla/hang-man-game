@@ -15,5 +15,5 @@ export const Primary: Story = {
 };
 
 export const Secondary: Story = {
-  render: () => <Button text="Button" primary={false} />,
+  render: () => <Button text="Button" secondary />,
 };
