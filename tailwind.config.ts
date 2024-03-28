@@ -6,6 +6,7 @@ const config: Config = {
     "./components/**/*.{js,ts,jsx,tsx,mdx}",
     "./app/**/*.{js,ts,jsx,tsx,mdx}",
   ],
+  darkMode: ["class", '[data-mode="dark"]'],
   theme: {
     screens: {
       "2xs": { max: "320px" },
@@ -43,6 +44,11 @@ const config: Config = {
           "0 2px 0 3px navy, inset 0 6px 0 1px #2463FF, inset 0 0 0 1000px rgba(255, 255, 255, 0.25)",
         containerShadow:
           "inset 0 -8px 0 4px lightBlue, inset 0 6px 0 8px #2463ff",
+        secondaryButtonShadow: "0 2px 0 3px #FE71FE, inset 0 6px 0 1px #7199FF",
+        secondaryContainerShadow:
+          "inset 0 -2px 0 3px #140E66, inset 0 1px 0 6px #C642FB",
+        hoverSecondaryContainerShadow:
+          "inset 0 -2px 0 3px #140E66, inset 0 1px 0 6px #C642FB, inset 0 0 0 1000px rgba(255, 255, 255, 0.25)",
       },
     },
   },
